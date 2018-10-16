@@ -12,7 +12,7 @@ export class AmisComponent implements OnInit {
   id: number;
   user: Marisupilami;
   errorMessage: string;
-  users: Array<Marisupilami> = [];
+  users: any;
 
   selectedOption: string;
   listFilter: string = "";
@@ -31,40 +31,42 @@ export class AmisComponent implements OnInit {
     });
   }
 
+  comparer(otherArray, id) {
+    return function(current) {
+      return (
+        otherArray.filter(function(other) {
+          return other.id == current.id && current.id != id && other.id != id;
+        }).length == 0
+      );
+    };
+  }
   notfriendss(): Array<Marisupilami> {
+    let users: Array<Marisupilami> = [];
     let user: Marisupilami;
     let Notfriends: Array<Marisupilami> = [];
-    console.log(this.users.result.length);
-    for (let a of this.users.result) {
-      console.log(this.users);
+    users = this.users.result;
+    console.log("hello  in not friends **************************************");
+    for (let a of users) {
       if (a.id == this.id) {
         user = a;
         console.log(user);
       }
     }
 
-    console.log("in not friends");
+    let onlyInA = users.filter(this.comparer(user.friends, user.id));
+    let onlyInB = user.friends.filter(this.comparer(users, user.id));
 
-    for (let k of user.friends) {
-      for (let a of this.users.result) {
-        if (k.id != a.id) {
-          Notfriends.push(a);
-        }
-      }
-    }
+    let result = onlyInA.concat(onlyInB);
+    const index = result.indexOf(user);
+    result.splice(index, 1);
+
+    console.log(result, "hello this is the result ");
+
+    console.log(users.length, "first length");
+
     console.log("************************");
     console.log(Notfriends.length);
-    var flags = [],
-      output = [],
-      l = Notfriends.length,
-      i;
-    for (i = 0; i < l; i++) {
-      if (flags[Notfriends[i].id]) continue;
-      flags[Notfriends[i].id] = true;
-      output.push(Notfriends[i]);
-    }
-
-    return output;
+    return result;
   }
 
   AddUser(a: any) {
